@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "author": "AutoGreen",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 80, "left": 40, "attrs": {} },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": -128,
+      "left": 389.6,
+      "attrs": { "pins": "i2c" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ventilador",
+      "top": 70,
+      "left": 390,
+      "attrs": { "color": "cyan", "label": "VENTILADOR" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "bomba",
+      "top": 140,
+      "left": 390,
+      "attrs": { "color": "blue", "label": "BOMBA RIEGO" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "calefactor",
+      "top": 210,
+      "left": 390,
+      "attrs": { "color": "yellow", "label": "CALEFACTOR" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "luz_aux",
+      "top": 280,
+      "left": 390,
+      "attrs": { "color": "white", "label": "LUZ AUX" }
+    }
+  ],
+  "connections": [
+    [ "lcd1:GND", "uno:GND.2", "black", [] ],
+    [ "lcd1:VCC", "uno:5V", "red", [] ],
+    [ "lcd1:SDA", "uno:A4", "green", [] ],
+    [ "lcd1:SCL", "uno:A5", "blue", [] ],
+    [ "ventilador:A", "uno:9", "cyan", [] ],
+    [ "ventilador:C", "uno:GND.1", "black", [] ],
+    [ "bomba:A", "uno:10", "blue", [] ],
+    [ "bomba:C", "uno:GND.1", "black", [] ],
+    [ "calefactor:A", "uno:11", "yellow", [] ],
+    [ "calefactor:C", "uno:GND.1", "black", [] ],
+    [ "luz_aux:A", "uno:12", "white", [] ],
+    [ "luz_aux:C", "uno:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}
