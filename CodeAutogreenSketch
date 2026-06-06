@@ -1,0 +1,136 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+/*
+ * AutoGreen - Sistema de Monitoreo y Control de Invernadero
+ * Arquitectura de Computadoras I
+ */
+
+#define PIN_VENTILADOR 9
+#define PIN_BOMBA 10
+#define PIN_CALEFACTOR 11
+#define PIN_LUZ_AUX 12
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+float temperatura = 25.0;
+int humedadSuelo = 60;
+int luminosidad = 5000;
+
+int paso = 0;
+unsigned long tiempoAnterior = 0;
+
+void setup() {
+  Serial.begin(9600);
+
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("AutoGreen");
+  lcd.setCursor(0, 1);
+  lcd.print("Iniciando...");
+  delay(2000);
+  lcd.clear();
+
+  pinMode(PIN_VENTILADOR, OUTPUT);
+  pinMode(PIN_BOMBA, OUTPUT);
+  pinMode(PIN_CALEFACTOR, OUTPUT);
+  pinMode(PIN_LUZ_AUX, OUTPUT);
+
+  digitalWrite(PIN_VENTILADOR, LOW);
+  digitalWrite(PIN_BOMBA, LOW);
+  digitalWrite(PIN_CALEFACTOR, LOW);
+  digitalWrite(PIN_LUZ_AUX, LOW);
+
+  Serial.println("AutoGreen - Sistema iniciado");
+}
+
+void loop() {
+  unsigned long ahora = millis();
+
+  if (ahora - tiempoAnterior > 10000) {
+    tiempoAnterior = ahora;
+    paso++;
+
+    switch (paso % 5) {
+      case 1:
+        temperatura = 35.0;
+        humedadSuelo = 60;
+        luminosidad = 5000;
+        Serial.println("ESCENARIO 1: TEMPERATURA ALTA");
+        break;
+
+      case 2:
+        temperatura = 10.0;
+        humedadSuelo = 60;
+        luminosidad = 5000;
+        Serial.println("ESCENARIO 2: TEMPERATURA BAJA");
+        break;
+
+      case 3:
+        temperatura = 25.0;
+        humedadSuelo = 25;
+        luminosidad = 5000;
+        Serial.println("ESCENARIO 3: SUELO SECO");
+        break;
+
+      case 4:
+        temperatura = 25.0;
+        humedadSuelo = 60;
+        luminosidad = 100;
+        Serial.println("ESCENARIO 4: POCA LUZ");
+        break;
+
+      case 0:
+        temperatura = 25.0;
+        humedadSuelo = 60;
+        luminosidad = 5000;
+        Serial.println("ESCENARIO 5: CONDICIONES NORMALES");
+        break;
+    }
+  }
+
+  digitalWrite(PIN_VENTILADOR, temperatura > 30.0 ? HIGH : LOW);
+  digitalWrite(PIN_CALEFACTOR, temperatura < 15.0 ? HIGH : LOW);
+  digitalWrite(PIN_BOMBA, humedadSuelo < 40 ? HIGH : LOW);
+  digitalWrite(PIN_LUZ_AUX, luminosidad < 200 ? HIGH : LOW);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(temperatura);
+  lcd.print(" C");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Bomba: ");
+  lcd.print(digitalRead(PIN_BOMBA) ? "ON " : "OFF");
+
+  Serial.println("-------------------------------------");
+  Serial.print("Temperatura: ");
+  Serial.print(temperatura);
+  Serial.println(" C");
+
+  Serial.print("Humedad Suelo: ");
+  Serial.print(humedadSuelo);
+  Serial.println(" %");
+
+  Serial.print("Luminosidad: ");
+  Serial.print(luminosidad);
+  Serial.println(" lux");
+
+  Serial.print("Ventilador: ");
+  Serial.println(digitalRead(PIN_VENTILADOR) ? "ENCENDIDO" : "APAGADO");
+
+  Serial.print("Bomba riego: ");
+  Serial.println(digitalRead(PIN_BOMBA) ? "ENCENDIDA" : "APAGADA");
+
+  Serial.print("Calefactor: ");
+  Serial.println(digitalRead(PIN_CALEFACTOR) ? "ENCENDIDO" : "APAGADO");
+
+  Serial.print("Luz auxiliar: ");
+  Serial.println(digitalRead(PIN_LUZ_AUX) ? "ENCENDIDA" : "APAGADA");
+
+  Serial.println("-------------------------------------");
+
+  delay(2000);
+}
